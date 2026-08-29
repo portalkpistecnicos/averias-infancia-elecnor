@@ -54,6 +54,7 @@
     --border:         #34363a;
     --elecnor-blue:   #2a78d6;
     --elecnor-blue-dk:#1c5cab;
+    --elecnor-blue-soft: #1c2d42;
     --elecnor-orange: #F47C02;
     --good:           #0ca30c;
     --good-soft:      #123a12;
@@ -116,6 +117,7 @@
   .stat-tile .value { font-size: 30px; font-weight: 700; line-height: 1.1; color: var(--elecnor-blue-dk); }
   .stat-tile .foot { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
   .stat-tile.status-critical .value { color: var(--critical); }
+  .stat-tile.status-good .value { color: var(--good); }
 
   .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
   .status-pill.good { background: var(--good-soft); color: var(--good); }
@@ -135,10 +137,6 @@
   .meta-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text-primary); opacity: .5; }
 
   .tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .tech-result { font-size: 12.5px; padding: 10px 12px; border-radius: 8px; background: var(--elecnor-blue-soft); margin-bottom: 12px; min-height: 18px; }
-  .tech-result .r-name { font-weight: 700; color: var(--elecnor-blue-dk); }
-  .tech-result .r-count { font-weight: 700; color: var(--elecnor-orange); }
-  .tech-more { font-size: 11.5px; color: var(--text-muted); padding-top: 6px; font-style: italic; }
   .tech-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; background: var(--surface-1); }
   .tech-card h3 { font-size: 13.5px; margin: 0 0 2px; color: var(--elecnor-blue-dk); }
   .tech-card .tech-card-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 12px; }
@@ -161,6 +159,10 @@
   }
   .tech-row.highlighted { background: var(--elecnor-blue-soft); border-radius: 6px; margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
   .tech-row.highlighted .tech-rank { background: var(--elecnor-orange); }
+  .tech-result { font-size: 12.5px; padding: 10px 12px; border-radius: 8px; background: var(--elecnor-blue-soft); margin-bottom: 12px; min-height: 18px; }
+  .tech-result .r-name { font-weight: 700; color: var(--elecnor-blue-dk); }
+  .tech-result .r-count { font-weight: 700; color: var(--elecnor-orange); }
+  .tech-more { font-size: 11.5px; color: var(--text-muted); padding-top: 6px; font-style: italic; }
 
   .legend { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
 
@@ -196,9 +198,9 @@
   <div class="masthead">
     <div class="logo-box"><img src="data:image/png;base64,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" alt="Elecnor"></div>
     <div class="titles">
-      <div class="tag-report">Informe Gerencial</div>
+      <div class="tag-report">Informe Gerencial · Actualización automática</div>
       <h1>Indicador P22 — Averías de Infancia</h1>
-      <p class="subtitle">BAF/FO · V Región · Instalaciones julio 2026 · Corte 01-08-2026</p>
+      <p class="subtitle">BAF/FO · V Región · Instalaciones 01-07-2026 a 31-07-2026 · Corte 01-08-2026</p>
     </div>
   </div>
 
@@ -212,13 +214,13 @@
       </div>
       <div class="stat-tile status-critical">
         <div class="label">Tasa real V Región</div>
-        <div class="value">1,80%</div>
-        <div class="foot">58 / 3.218 instalaciones</div>
+        <div class="value">1,96%</div>
+        <div class="foot">63 / 3.215 instalaciones</div>
       </div>
       <div class="stat-tile status-critical">
         <div class="label">Desviación vs. meta</div>
-        <div class="value">+0,30 pp</div>
-        <div class="foot"><span class="status-pill critical">✕ No cumple</span></div>
+        <div class="value">+0,46 pp</div>
+        <div class="foot"><span class="status-pill critical">&#10005; No cumple</span></div>
       </div>
     </div>
 
@@ -251,67 +253,143 @@
           <tr>
             <td>Viña del Mar</td>
             <td class="num">1.671</td>
-            <td class="num">53</td>
+            <td class="num">58</td>
             <td>
               <div class="bar-cell">
                 <div class="bar-track">
-                  <div class="bar-fill critical" style="width:62%"></div>
-                  <div class="meta-marker" style="left:29%"></div>
+                  <div class="bar-fill critical" style="width:100%"></div>
+                  <div class="meta-marker" style="left:43.2%"></div>
                 </div>
               </div>
             </td>
-            <td class="num">3,17%</td>
-            <td><span class="status-pill critical">✕ No cumple</span></td>
-          </tr>
-          <tr>
+            <td class="num">3,47%</td>
+            <td><span class="status-pill critical">&#10005; No cumple</span></td>
+          </tr>          <tr>
             <td>San Antonio</td>
             <td class="num">448</td>
             <td class="num">4</td>
             <td>
               <div class="bar-cell">
                 <div class="bar-track">
-                  <div class="bar-fill" style="width:17%"></div>
-                  <div class="meta-marker" style="left:29%"></div>
+                  <div class="bar-fill" style="width:25.6%"></div>
+                  <div class="meta-marker" style="left:43.2%"></div>
                 </div>
               </div>
             </td>
             <td class="num">0,89%</td>
-            <td><span class="status-pill good">✓ Cumple</span></td>
-          </tr>
-          <tr>
+            <td><span class="status-pill good">&#10003; Cumple</span></td>
+          </tr>          <tr>
             <td>Valparaíso</td>
             <td class="num">1.096</td>
             <td class="num">1</td>
             <td>
               <div class="bar-cell">
                 <div class="bar-track">
-                  <div class="bar-fill" style="width:2%"></div>
-                  <div class="meta-marker" style="left:29%"></div>
+                  <div class="bar-fill" style="width:2.6%"></div>
+                  <div class="meta-marker" style="left:43.2%"></div>
                 </div>
               </div>
             </td>
             <td class="num">0,09%</td>
-            <td><span class="status-pill good">✓ Cumple</span></td>
-          </tr>
-          <tr class="total-row">
+            <td><span class="status-pill good">&#10003; Cumple</span></td>
+          </tr>          <tr class="total-row">
             <td>Total V Región</td>
-            <td class="num">3.218</td>
-            <td class="num">58</td>
+            <td class="num">3.215</td>
+            <td class="num">63</td>
             <td>
               <div class="bar-cell">
                 <div class="bar-track">
-                  <div class="bar-fill critical" style="width:35%"></div>
-                  <div class="meta-marker" style="left:29%"></div>
+                  <div class="bar-fill critical" style="width:56.5%"></div>
+                  <div class="meta-marker" style="left:43.2%"></div>
                 </div>
               </div>
             </td>
-            <td class="num">1,80%</td>
-            <td><span class="status-pill critical">✕ No cumple</span></td>
+            <td class="num">1,96%</td>
+            <td><span class="status-pill critical">&#10005; No cumple</span></td>
           </tr>
         </tbody>
       </table>
       </div>
-      <p class="legend">Viña del Mar es la única agencia que supera la meta y explica el 91% de los casos de infancia de toda la V Región (53 de 58).</p>
+      <p class="legend">Reporte generado automáticamente desde el archivo CSV más reciente de la carpeta BBDD.</p>
+    </div>
+
+    <div class="card">
+      <h2>Tasa de infancia por empresa reparadora</h2>
+      <p class="card-sub">Normalizada por volumen de instalaciones — no confundir con el conteo absoluto de casos</p>
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th class="num">Instalaciones</th>
+            <th class="num">Infancia</th>
+            <th style="min-width:200px">Tasa vs. meta</th>
+            <th class="num">Tasa</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CFA</td>
+            <td class="num">120</td>
+            <td class="num">9</td>
+            <td>
+              <div class="bar-cell">
+                <div class="bar-track">
+                  <div class="bar-fill critical" style="width:100%"></div>
+                  <div class="meta-marker" style="left:20%"></div>
+                </div>
+              </div>
+            </td>
+            <td class="num">7,50%</td>
+            <td><span class="status-pill critical">&#10005; No cumple</span></td>
+          </tr>          <tr>
+            <td>ZEN</td>
+            <td class="num">25</td>
+            <td class="num">1</td>
+            <td>
+              <div class="bar-cell">
+                <div class="bar-track">
+                  <div class="bar-fill critical" style="width:53.3%"></div>
+                  <div class="meta-marker" style="left:20%"></div>
+                </div>
+              </div>
+            </td>
+            <td class="num">4,00%</td>
+            <td><span class="status-pill critical">&#10005; No cumple</span></td>
+          </tr>          <tr>
+            <td>ELECNOR</td>
+            <td class="num">3.008</td>
+            <td class="num">53</td>
+            <td>
+              <div class="bar-cell">
+                <div class="bar-track">
+                  <div class="bar-fill critical" style="width:23.5%"></div>
+                  <div class="meta-marker" style="left:20%"></div>
+                </div>
+              </div>
+            </td>
+            <td class="num">1,76%</td>
+            <td><span class="status-pill critical">&#10005; No cumple</span></td>
+          </tr>          <tr>
+            <td>TELEFONICA</td>
+            <td class="num">62</td>
+            <td class="num">0</td>
+            <td>
+              <div class="bar-cell">
+                <div class="bar-track">
+                  <div class="bar-fill" style="width:0%"></div>
+                  <div class="meta-marker" style="left:20%"></div>
+                </div>
+              </div>
+            </td>
+            <td class="num">0,00%</td>
+            <td><span class="status-pill good">&#10003; Cumple</span></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="legend">La empresa con mayor volumen no es necesariamente la de peor desempeño relativo — esta vista corrige ese sesgo.</p>
     </div>
 
     <div class="card">
@@ -321,40 +399,38 @@
 
         <div class="tech-card" data-agencia="vina">
           <h3>Viña del Mar</h3>
-          <p class="tech-card-sub">53 casos totales · 26 técnicos</p>
+          <p class="tech-card-sub">58 casos registrados · 27 técnicos</p>
           <select class="tech-select" id="vina-select" onchange="showTech('vina', this.value)">
             <option value="" selected>— Todos los técnicos (quitar filtro) —</option>
           </select>
           <div class="tech-result" id="vina-result">Seleccione un técnico para ver sus averías.</div>
-          <div class="tech-row" id="vina-row-0"><div class="tech-rank">1</div><div class="tech-name">Alejandro Sebastián Cisternas Marín</div><div class="tech-count">4</div></div>
-          <div class="tech-row" id="vina-row-1"><div class="tech-rank">2</div><div class="tech-name">Franco Josué Díaz Núñez</div><div class="tech-count">4</div></div>
-          <div class="tech-row" id="vina-row-2"><div class="tech-rank">3</div><div class="tech-name">Richards Antonio Cruz Cuevas</div><div class="tech-count">3</div></div>
-          <div class="tech-row" id="vina-row-3"><div class="tech-rank">4</div><div class="tech-name">Alejandro Nicolás Para Gómez</div><div class="tech-count">3</div></div>
-          <div class="tech-row" id="vina-row-4"><div class="tech-rank">5</div><div class="tech-name">Jonathan Ricardo Henríquez Venegas</div><div class="tech-count">3</div></div>
-          <p class="tech-more">+21 técnicos más con 1 a 3 averías — selecciónelos en el combo box.</p>
+          <div class="tech-row" id="vina-row-0"><div class="tech-rank">1</div><div class="tech-name">FRANCO JOSUE DIAZ NUNEZ</div><div class="tech-count">5</div></div>
+          <div class="tech-row" id="vina-row-1"><div class="tech-rank">2</div><div class="tech-name">ALEJANDRO SEBASTIAN CISTERNAS MARIN</div><div class="tech-count">4</div></div>
+          <div class="tech-row" id="vina-row-2"><div class="tech-rank">3</div><div class="tech-name">ALEJANDRO NICOLAS PARA GOMEZ</div><div class="tech-count">3</div></div>
+          <div class="tech-row" id="vina-row-3"><div class="tech-rank">4</div><div class="tech-name">BASTIAN IGNACIO RIOS MADRID</div><div class="tech-count">3</div></div>
+          <div class="tech-row" id="vina-row-4"><div class="tech-rank">5</div><div class="tech-name">FERNANDO ALEXIS HOLM MORALES</div><div class="tech-count">3</div></div>
+          <p class="tech-more">+22 técnicos más — selecciónelos en el combo box.</p>
         </div>
-
         <div class="tech-card" data-agencia="sanantonio">
           <h3>San Antonio</h3>
-          <p class="tech-card-sub">4 casos totales · 4 técnicos</p>
+          <p class="tech-card-sub">4 casos registrados · 4 técnicos</p>
           <select class="tech-select" id="sanantonio-select" onchange="showTech('sanantonio', this.value)">
             <option value="" selected>— Todos los técnicos (quitar filtro) —</option>
           </select>
           <div class="tech-result" id="sanantonio-result">Seleccione un técnico para ver sus averías.</div>
-          <div class="tech-row" id="sanantonio-row-0"><div class="tech-rank">1</div><div class="tech-name">Simón Andrés Silva Philip</div><div class="tech-count">1</div></div>
-          <div class="tech-row" id="sanantonio-row-1"><div class="tech-rank">2</div><div class="tech-name">Sebastián Andrés Sánchez Cayuqueo</div><div class="tech-count">1</div></div>
-          <div class="tech-row" id="sanantonio-row-2"><div class="tech-rank">3</div><div class="tech-name">Iván Alejandro Calderón Muñoz</div><div class="tech-count">1</div></div>
-          <div class="tech-row" id="sanantonio-row-3"><div class="tech-rank">4</div><div class="tech-name">Cristian Nicolás Serrano Vellagas</div><div class="tech-count">1</div></div>
+          <div class="tech-row" id="sanantonio-row-0"><div class="tech-rank">1</div><div class="tech-name">CRISTIAN NICOLAS SERRANO VELLAGAS</div><div class="tech-count">1</div></div>
+          <div class="tech-row" id="sanantonio-row-1"><div class="tech-rank">2</div><div class="tech-name">IVAN ALEJANDRO CALDERON MUNOZ</div><div class="tech-count">1</div></div>
+          <div class="tech-row" id="sanantonio-row-2"><div class="tech-rank">3</div><div class="tech-name">SEBASTIAN ANDRES SANCHEZ CAYUQUEO</div><div class="tech-count">1</div></div>
+          <div class="tech-row" id="sanantonio-row-3"><div class="tech-rank">4</div><div class="tech-name">SIMON ANDRES SILVA PHILIP</div><div class="tech-count">1</div></div>
         </div>
-
         <div class="tech-card" data-agencia="valparaiso">
           <h3>Valparaíso</h3>
-          <p class="tech-card-sub">1 caso total · 1 técnico</p>
+          <p class="tech-card-sub">1 caso registrado · 1 técnico</p>
           <select class="tech-select" id="valparaiso-select" onchange="showTech('valparaiso', this.value)">
             <option value="" selected>— Todos los técnicos (quitar filtro) —</option>
           </select>
           <div class="tech-result" id="valparaiso-result">Seleccione un técnico para ver sus averías.</div>
-          <div class="tech-row" id="valparaiso-row-0"><div class="tech-rank">1</div><div class="tech-name">Segundo Enrique Gómez Araya</div><div class="tech-count">1</div></div>
+          <div class="tech-row" id="valparaiso-row-0"><div class="tech-rank">1</div><div class="tech-name">SEGUNDO ENRIQUE GOMEZ ARAYA</div><div class="tech-count">1</div></div>
         </div>
 
       </div>
@@ -362,52 +438,54 @@
 
     <div class="conclusion">
       <h2>Conclusión y foco de gestión</h2>
-      <p>La V Región cierra el período con una tasa de infancia de 1,80%, por sobre la meta de 1,50% (+0,30 pp). La desviación es explicada casi en su totalidad por Viña del Mar, cuya tasa (3,17%) más que duplica el umbral y concentra el 91% de los casos de infancia de toda la región.</p>
-      <p>San Antonio y Valparaíso cumplen la meta con amplio margen, por lo que el esfuerzo de gestión debe concentrarse en Viña del Mar: reforzar la supervisión técnica de los técnicos con mayor reincidencia y revisar los procesos de instalación asociados a módem y cableado interior, causas que concentran cerca del 45% de los casos.</p>
+      <p>La V Región cierra el período con una tasa de infancia de 1,96%, por sobre la meta de 1,50% (+0,46 pp).</p>
+      <p>Viña del Mar concentra 58 de los 63 casos (92%) con una tasa de 3,47%. Por empresa reparadora, CFA presenta la tasa más alta (7,50% sobre 120 instalaciones).</p>
+      <p>Este informe se actualiza automáticamente desde el archivo más reciente descargado en la carpeta BBDD. Última actualización: 28-08-2026 22:29.</p>
     </div>
 
-    <p class="footer-note">Elecnor Chile · Uso interno · Generado a partir de Averias_infancia_08_2026.csv</p>
+    <p class="footer-note">Elecnor Chile · Uso interno · Generado automáticamente desde Averias_infancia_08_2026.csv · 28-08-2026 22:29</p>
   </div>
 </div>
 <script>
   var techData = {
     vina: [
-      { name: "Alejandro Sebastián Cisternas Marín", count: 4 },
-      { name: "Franco Josué Díaz Núñez", count: 4 },
-      { name: "Richards Antonio Cruz Cuevas", count: 3 },
-      { name: "Alejandro Nicolás Para Gómez", count: 3 },
-      { name: "Jonathan Ricardo Henríquez Venegas", count: 3 },
-      { name: "Fernando Alexis Holm Morales", count: 3 },
-      { name: "Héctor José Ortiz Márquez", count: 3 },
-      { name: "Henry Muriel Díaz Torrijo", count: 3 },
-      { name: "Néstor Fabián Pastén Alarcón", count: 2 },
-      { name: "Wilfred René Rocco Zúñiga", count: 2 },
-      { name: "Marco Manuel Vega Vega", count: 2 },
-      { name: "Cristian Nicolás Serrano Vellagas", count: 2 },
-      { name: "Bryan Antonio Hinojosa Cárdenas", count: 2 },
-      { name: "Bastián Ignacio Ríos Madrid", count: 2 },
-      { name: "Ronald Antonio Gariza Torres", count: 2 },
-      { name: "Esteban David Ortiz Figueroa", count: 2 },
-      { name: "Jair Jesús Valencia Díaz", count: 2 },
-      { name: "José Manuel Sepúlveda Rojas", count: 1 },
-      { name: "Augusto Andrés Fuentes Tapia", count: 1 },
-      { name: "Héctor Fernando Quiroz Torres", count: 1 },
-      { name: "Carlos Hernán Muñoz Matus", count: 1 },
-      { name: "Matías Benjamín Filgueira Orellana", count: 1 },
-      { name: "Sebastián Patricio Silva Cantillana", count: 1 },
-      { name: "Alejandro Enrique Lagos González", count: 1 },
-      { name: "Abraham David Salazar Cubillos", count: 1 },
-      { name: "Juan José Marcano González", count: 1 }
+      { name: 'FRANCO JOSUE DIAZ NUNEZ', count: 5 },
+      { name: 'ALEJANDRO SEBASTIAN CISTERNAS MARIN', count: 4 },
+      { name: 'ALEJANDRO NICOLAS PARA GOMEZ', count: 3 },
+      { name: 'BASTIAN IGNACIO RIOS MADRID', count: 3 },
+      { name: 'FERNANDO ALEXIS HOLM MORALES', count: 3 },
+      { name: 'HECTOR JOSE ORTIZ MARQUEZ', count: 3 },
+      { name: 'HENRY MURIEL DIAZ TORRIJO', count: 3 },
+      { name: 'JONATHAN RICARDO HENRIQUEZ VENEGAS', count: 3 },
+      { name: 'RICHARDS ANTONIO CRUZ CUEVAS', count: 3 },
+      { name: 'RONALD ANTONIO GARIZA TORRES', count: 3 },
+      { name: 'BRYAN ANTONIO HINOJOSA CARDENAS', count: 2 },
+      { name: 'CRISTIAN NICOLAS SERRANO VELLAGAS', count: 2 },
+      { name: 'ESTEBAN DAVID ORTIZ FIGUEROA', count: 2 },
+      { name: 'JAIR JESUS VALENCIA DIAZ', count: 2 },
+      { name: 'MARCO MANUEL VEGA VEGA', count: 2 },
+      { name: 'NESTOR FABIAN PASTEN ALARCON', count: 2 },
+      { name: 'SEBASTIAN PATRICIO SILVA CANTILLANA', count: 2 },
+      { name: 'WILFRED RENE ROCCO ZUNIGA', count: 2 },
+      { name: 'ABRAHAM DAVID SALAZAR CUBILLOS', count: 1 },
+      { name: 'ALEJANDRO ENRIQUE LAGOS GONZALEZ', count: 1 },
+      { name: 'AUGUSTO ANDRES FUENTES TAPIA', count: 1 },
+      { name: 'CARLOS HERNAN MUNOZ MATUS', count: 1 },
+      { name: 'HECTOR FERNANDO QUIROZ TORRES', count: 1 },
+      { name: 'JOSE MANUEL SEPULVEDA ROJAS', count: 1 },
+      { name: 'JUAN JOSE MARCANO GONZALEZ', count: 1 },
+      { name: 'MATIAS BENJAMIN FILGUEIRA ORELLANA', count: 1 },
+      { name: 'YUSSEF ALI SAT PINO', count: 1 }
     ],
     sanantonio: [
-      { name: "Simón Andrés Silva Philip", count: 1 },
-      { name: "Sebastián Andrés Sánchez Cayuqueo", count: 1 },
-      { name: "Iván Alejandro Calderón Muñoz", count: 1 },
-      { name: "Cristian Nicolás Serrano Vellagas", count: 1 }
+      { name: 'CRISTIAN NICOLAS SERRANO VELLAGAS', count: 1 },
+      { name: 'IVAN ALEJANDRO CALDERON MUNOZ', count: 1 },
+      { name: 'SEBASTIAN ANDRES SANCHEZ CAYUQUEO', count: 1 },
+      { name: 'SIMON ANDRES SILVA PHILIP', count: 1 }
     ],
     valparaiso: [
-      { name: "Segundo Enrique Gómez Araya", count: 1 }
-    ]
+      { name: 'SEGUNDO ENRIQUE GOMEZ ARAYA', count: 1 }
+    ],
   };
 
   function populateSelects() {
