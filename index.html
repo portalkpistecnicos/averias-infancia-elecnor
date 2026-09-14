@@ -1,522 +1,436 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Infancia BAF - ELECNOR</title>
+<meta charset="utf-8">
+<title>Informe &mdash; Averías Infancia</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Informe gerencial de averías de infancia por agencia, Elecnor Chile.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  .viz-root {
-    color-scheme: light;
-    --surface-1:      #ffffff;
-    --page:           #f2f4f7;
-    --text-primary:   #101828;
-    --text-secondary: #475467;
-    --text-muted:     #667085;
-    --grid:           #e4e7ec;
-    --border:         #d0d5dd;
-    --elecnor-blue:   #003F86;
-    --elecnor-blue-dk:#002d61;
-    --elecnor-blue-soft: #e3ecf7;
-    --elecnor-orange: #F47C02;
-    --good:           #0ca30c;
-    --good-soft:      #e3f5e3;
-    --critical:       #d03b3b;
-    --critical-soft:  #fbe7e7;
+:root{
+  --navy-900:#0a2350; --navy-800:#0d2c63; --navy-700:#123b7a; --navy-500:#2c5fae; --navy-100:#e3ebf7;
+  --orange-600:#e8631a; --orange-100:#fdeadd;
+  --bg:#f3f5f9; --surface:#ffffff; --border:#dde3ee; --border-strong:#c3ccdd;
+  --text-primary:#151b2b; --text-secondary:#4d5972; --text-muted:#8790a3;
+  --success-bg:#e2f4ea; --success-fg:#1c7a4d; --success-border:#b7e2c9;
+  --danger-bg:#fbe9e7; --danger-fg:#b8391f; --danger-border:#f0c3ba;
+  --font-display:'Barlow Semi Condensed', Arial, sans-serif;
+  --font-body:'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --navy-900:#eaf0fb; --navy-800:#dbe6fa; --navy-700:#9db8ec; --navy-500:#7fa3e6; --navy-100:#16233f;
+    --orange-600:#f0844a; --orange-100:#3a2416;
+    --bg:#0b1220; --surface:#111a2d; --border:#243b5e; --border-strong:#33507d;
+    --text-primary:#eef2fb; --text-secondary:#a9b6cf; --text-muted:#7686a3;
+    --success-bg:#123626; --success-fg:#6fd3a0; --success-border:#1f5c3f;
+    --danger-bg:#3a1a15; --danger-fg:#f1917d; --danger-border:#6b3226;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) .viz-root {
-      color-scheme: dark;
-      --surface-1:      #17191c;
-      --page:           #0d0d0d;
-      --text-primary:   #f5f5f4;
-      --text-secondary: #c3c2b7;
-      --text-muted:     #94938a;
-      --grid:           #2c2c2a;
-      --border:         #34363a;
-      --elecnor-blue:   #2a78d6;
-      --elecnor-blue-dk:#1c5cab;
-      --elecnor-blue-soft: #1c2d42;
-      --elecnor-orange: #F47C02;
-      --good:           #0ca30c;
-      --good-soft:      #123a12;
-      --critical:       #e66767;
-      --critical-soft:  #3a1414;
-    }
+}
+:root[data-theme="dark"]{
+  --navy-900:#eaf0fb; --navy-800:#dbe6fa; --navy-700:#9db8ec; --navy-500:#7fa3e6; --navy-100:#16233f;
+  --orange-600:#f0844a; --orange-100:#3a2416;
+  --bg:#0b1220; --surface:#111a2d; --border:#243b5e; --border-strong:#33507d;
+  --text-primary:#eef2fb; --text-secondary:#a9b6cf; --text-muted:#7686a3;
+  --success-bg:#123626; --success-fg:#6fd3a0; --success-border:#1f5c3f;
+  --danger-bg:#3a1a15; --danger-fg:#f1917d; --danger-border:#6b3226;
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--text-primary); font-family:var(--font-body); line-height:1.6; -webkit-font-smoothing:antialiased;}
+.page{max-width:960px; margin:0 auto; padding:2.5rem 1.5rem 4rem;}
+.masthead{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem 1.5rem; padding-bottom:1.5rem; border-bottom:3px solid var(--navy-700); margin-bottom:2rem;}
+.masthead-left{display:flex; align-items:center; gap:1.5rem;}
+.masthead-divider{width:1px; align-self:stretch; background:var(--border-strong); flex-shrink:0;}
+.masthead-text{display:flex; flex-direction:column; gap:.35rem;}
+.masthead-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.btn-ghost{display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--border-strong); color:var(--navy-700); font-family:var(--font-body); font-size:13px; font-weight:600; padding:.55rem .9rem; border-radius:8px; cursor:pointer; line-height:1;}
+.btn-ghost:hover{background:var(--navy-100);}
+.btn-ghost:focus-visible{outline:2px solid var(--navy-500); outline-offset:1px;}
+.btn-icon{padding:.55rem; width:36px; height:36px; justify-content:center;}
+.btn-icon svg{width:16px; height:16px; display:block; stroke:currentColor;}
+.btn-icon .i-sun{display:none;}
+.btn-icon.is-dark-active .i-moon{display:none;}
+.btn-icon.is-dark-active .i-sun{display:block;}
+.eyebrow{font-family:var(--font-display); font-size:13px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--orange-600);}
+h1{font-family:var(--font-display); font-weight:700; font-size:clamp(28px,4vw,38px); line-height:1.08; margin:0; color:var(--navy-900); text-wrap:balance;}
+.subline{font-size:15px; color:var(--text-secondary); margin:0;}
+.logo{height:44px; width:auto; flex-shrink:0;}
+section{margin-bottom:2.75rem;}
+h2{font-family:var(--font-display); font-weight:700; font-size:21px; color:var(--navy-800); margin:0 0 1rem; letter-spacing:.01em;}
+.kpi-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px;}
+.kpi-card{background:var(--surface); border:0.5px solid var(--border); border-top:3px solid var(--navy-700); border-radius:10px; padding:1.1rem 1.25rem;}
+.kpi-label{font-size:12.5px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.06em; margin:0 0 .4rem;}
+.kpi-value{font-family:var(--font-display); font-weight:700; font-size:30px; color:var(--navy-900); font-variant-numeric:tabular-nums; margin:0;}
+.kpi-value.warn{color:var(--danger-fg);}
+.kpi-note{font-size:12.5px; color:var(--text-muted); margin:.3rem 0 0;}
+.tech-picker{background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:1.1rem 1.25rem;}
+.tech-picker label{display:block; font-size:12.5px; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.06em; margin:0 0 .5rem;}
+.tech-picker select{width:100%; min-height:48px; font-size:16px; font-family:var(--font-body); color:var(--text-primary); background:var(--surface); border:1px solid var(--border-strong); border-radius:8px; padding:.6rem .8rem; -webkit-appearance:none; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%234d5972' stroke-width='2'%3E%3Cpath d='M5 7l5 6 5-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .8rem center; background-size:18px;}
+.tech-picker select:focus{outline:2px solid var(--navy-500); outline-offset:1px;}
+.tech-detail{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-top:1rem;}
+.tech-detail .kpi-card{padding:.85rem 1rem;}
+.tech-detail .kpi-value{font-size:22px;}
+.table-wrap{background:var(--surface); border:0.5px solid var(--border); border-radius:10px; overflow-x:auto;}
+table{width:100%; border-collapse:collapse; min-width:640px; font-size:14.5px;}
+thead th{font-family:var(--font-display); font-weight:600; font-size:12.5px; letter-spacing:.04em; text-transform:uppercase; text-align:right; color:#ffffff; background:var(--navy-700); padding:.85rem 1rem; white-space:nowrap;}
+thead th:first-child{text-align:left;}
+tbody td{padding:.8rem 1rem; border-bottom:1px solid var(--border); text-align:right; font-variant-numeric:tabular-nums; color:var(--text-primary);}
+tbody td:first-child{text-align:left; font-weight:600; color:var(--navy-900);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr.total td{background:var(--navy-100); font-weight:700; border-top:2px solid var(--border-strong);}
+.status-pill{display:inline-block; padding:.28rem .7rem; border-radius:100px; font-size:12.5px; font-weight:600; letter-spacing:.02em; background:var(--navy-100); color:var(--text-secondary);}
+.status-pill.ok{background:var(--success-bg); color:var(--success-fg); border:1px solid var(--success-border);}
+.status-pill.no{background:var(--danger-bg); color:var(--danger-fg); border:1px solid var(--danger-border);}
+.notes-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:1.25rem;}
+@media (max-width:680px){ .notes-grid{grid-template-columns:1fr;} }
+.panel{background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:1.25rem 1.4rem;}
+.panel h3{font-family:var(--font-display); font-size:15px; font-weight:600; margin:0 0 .7rem; color:var(--navy-800);}
+.panel ul{margin:0; padding-left:1.1rem; color:var(--text-secondary); font-size:14px;}
+.panel li{margin-bottom:.5rem;}
+.panel li:last-child{margin-bottom:0;}
+.codes{display:flex; flex-wrap:wrap; gap:6px; margin-top:.4rem;}
+.code-chip{font-family:var(--font-body); font-size:12.5px; font-weight:600; color:var(--navy-700); background:var(--navy-100); border:1px solid var(--border); border-radius:6px; padding:.2rem .5rem; font-variant-numeric:tabular-nums;}
+footer{margin-top:2.5rem; padding-top:1.25rem; border-top:1px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5rem; font-size:12.5px; color:var(--text-muted);}
+@media print{
+  :root, :root[data-theme="dark"]{
+    --bg:#ffffff; --surface:#ffffff; --border:#dde3ee; --border-strong:#c3ccdd;
+    --text-primary:#151b2b; --text-secondary:#4d5972; --text-muted:#8790a3;
+    --navy-100:#e3ebf7;
   }
-  :root[data-theme="dark"] .viz-root {
-    color-scheme: dark;
-    --surface-1:      #17191c;
-    --page:           #0d0d0d;
-    --text-primary:   #f5f5f4;
-    --text-secondary: #c3c2b7;
-    --text-muted:     #94938a;
-    --grid:           #2c2c2a;
-    --border:         #34363a;
-    --elecnor-blue:   #2a78d6;
-    --elecnor-blue-dk:#1c5cab;
-    --elecnor-blue-soft: #1c2d42;
-    --elecnor-orange: #F47C02;
-    --good:           #0ca30c;
-    --good-soft:      #123a12;
-    --critical:       #e66767;
-    --critical-soft:  #3a1414;
-  }
-
-  * { box-sizing: border-box; }
-  .viz-root {
-    background: var(--page);
-    color: var(--text-primary);
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    padding: 0 0 48px;
-    max-width: 1080px;
-    margin: 0 auto;
-  }
-
-  .masthead {
-    background: linear-gradient(135deg, var(--elecnor-blue) 0%, var(--elecnor-blue-dk) 100%);
-    border-bottom: 4px solid var(--elecnor-orange);
-    padding: 28px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 0 0 14px 14px;
-    margin-bottom: 24px;
-  }
-  .masthead .logo-box { background: #fff; border-radius: 8px; padding: 8px 14px; display: flex; align-items: center; }
-  .masthead .logo-box img { height: 34px; display: block; }
-  .masthead .titles { text-align: right; }
-  .masthead h1 { color: #fff; font-size: 20px; margin: 0 0 4px; letter-spacing: .01em; }
-  .masthead .subtitle { color: #d7e3f4; font-size: 12.5px; margin: 0; }
-  .masthead .update-badge { color: #fff; font-size: 11.5px; margin: 6px 0 0; font-weight: 600; background: rgba(255,255,255,0.14); display: inline-block; padding: 3px 10px; border-radius: 999px; }
-  .masthead .tag-report { display: inline-block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--elecnor-orange); font-weight: 700; margin-bottom: 6px; }
-
-  .content { padding: 0 24px; }
-
-  .card {
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 22px 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
-  }
-  .card h2 { font-size: 15px; margin: 0 0 4px; color: var(--elecnor-blue-dk); border-left: 3px solid var(--elecnor-orange); padding-left: 10px; }
-  .card .card-sub { font-size: 12.5px; color: var(--text-muted); margin: 6px 0 18px 13px; }
-
-  .method-list { margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; }
-  .method-list code { background: var(--grid); border-radius: 4px; padding: 1px 5px; font-size: 11.5px; color: var(--text-primary); }
-
-  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
-  .stat-tile {
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
-  }
-  .stat-tile .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
-  .stat-tile .value { font-size: 30px; font-weight: 700; line-height: 1.1; color: var(--elecnor-blue-dk); }
-  .stat-tile .foot { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
-  .stat-tile.status-critical .value { color: var(--critical); }
-  .stat-tile.status-good .value { color: var(--good); }
-
-  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
-  .status-pill.good { background: var(--good-soft); color: var(--good); }
-  .status-pill.critical { background: var(--critical-soft); color: var(--critical); }
-
-  .table-scroll { overflow-x: auto; margin: 0 -2px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
-  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--grid); }
-  th { color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; background: var(--grid); }
-  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  tr.total-row td { font-weight: 700; border-top: 2px solid var(--elecnor-blue); border-bottom: none; }
-
-  .bar-cell { display: flex; align-items: center; gap: 8px; }
-  .bar-track { flex: 1; background: var(--grid); border-radius: 4px; height: 14px; position: relative; overflow: hidden; min-width: 80px; }
-  .bar-fill { height: 100%; border-radius: 4px; background: var(--elecnor-blue); }
-  .bar-fill.critical { background: var(--critical); }
-  .meta-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text-primary); opacity: .5; }
-
-  .tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .tech-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; background: var(--surface-1); }
-  .tech-card h3 { font-size: 13.5px; margin: 0 0 2px; color: var(--elecnor-blue-dk); }
-  .tech-card .tech-card-sub { font-size: 11.5px; color: var(--text-muted); margin: 0 0 12px; }
-  .tech-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--grid); font-size: 12.5px; }
-  .tech-row:last-child { border-bottom: none; }
-  .tech-rank { width: 20px; height: 20px; border-radius: 50%; background: var(--elecnor-blue); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .tech-name { flex: 1; color: var(--text-secondary); }
-  .tech-count { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text-primary); }
-  .tech-empty { font-size: 12.5px; color: var(--text-muted); padding: 8px 0; }
-  .tech-select {
-    width: 100%;
-    padding: 8px 10px;
-    margin-bottom: 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface-1);
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 12.5px;
-  }
-  .tech-row.highlighted { background: var(--elecnor-blue-soft); border-radius: 6px; margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
-  .tech-row.highlighted .tech-rank { background: var(--elecnor-orange); }
-  .tech-result { font-size: 12.5px; padding: 10px 12px; border-radius: 8px; background: var(--elecnor-blue-soft); margin-bottom: 12px; min-height: 18px; }
-  .tech-result .r-name { font-weight: 700; color: var(--elecnor-blue-dk); }
-  .tech-result .r-count { font-weight: 700; color: var(--elecnor-orange); }
-  .tech-more { font-size: 11.5px; color: var(--text-muted); padding-top: 6px; font-style: italic; }
-
-  .legend { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
-
-  .conclusion { background: var(--elecnor-blue); color: #fff; border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
-  .conclusion h2 { color: #fff; border-left: 3px solid var(--elecnor-orange); padding-left: 10px; font-size: 15px; margin: 0 0 10px; }
-  .conclusion p { font-size: 13px; line-height: 1.6; margin: 0 0 8px; color: #e6edf7; }
-  .conclusion p:last-child { margin-bottom: 0; }
-
-  .footer-note { text-align: center; font-size: 11px; color: var(--text-muted); padding-top: 8px; }
-
-  @media (max-width: 720px) {
-    .stat-row { grid-template-columns: 1fr; }
-    .tech-grid { grid-template-columns: 1fr; }
-  }
-
-  @media (max-width: 600px) {
-    .content { padding: 0 12px; }
-    .masthead { flex-direction: column; align-items: flex-start; gap: 14px; padding: 20px 16px; border-radius: 0 0 10px 10px; }
-    .masthead .titles { text-align: left; }
-    .masthead h1 { font-size: 17px; }
-    .masthead .subtitle { font-size: 11.5px; }
-    .card { padding: 16px 14px; }
-    .stat-tile .value { font-size: 24px; }
-    .tech-select { font-size: 16px; }
-    .stat-row { gap: 10px; }
-    .tech-grid { gap: 12px; }
-  }
+  body{background:#fff;}
+  .page{padding:0; max-width:none;}
+  .masthead-actions, .tech-picker select{display:none !important;}
+  section{break-inside:avoid;}
+}
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="viz-root">
-  <div class="masthead">
-    <div class="logo-box"><img src="data:image/png;base64,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" alt="Elecnor"></div>
-    <div class="titles">
-      <div class="tag-report">Informe Gerencial · Actualización automática</div>
+<header class="masthead">
+  <div class="masthead-left">
+    <img class="logo" alt="Elecnor" src="data:image/png;base64,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">
+    <div class="masthead-divider"></div>
+    <div class="masthead-text">
+      <span class="eyebrow">Informe gerencial &middot; Operaciones</span>
       <h1>Averías Infancia</h1>
-      <p class="subtitle">BAF/FO · V Región · Instalaciones 01-08-2026 a 31-08-2026 · Corte 01-09-2026</p>
-      <p class="update-badge">Base de datos actualizada: 11-09-2026 12:35</p>
+      <p class="subline">Actualizado 14-09-2026 12:17</p>
     </div>
   </div>
+  <div class="masthead-actions">
+    <button type="button" id="btn-theme" class="btn-ghost btn-icon" aria-label="Cambiar a modo oscuro">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button type="button" id="btn-export-excel" class="btn-ghost">Exportar Excel</button>
+    <button type="button" id="btn-export-pdf" class="btn-ghost">Exportar PDF</button>
+  </div>
+</header>
 
-  <div class="content">
+<section>
+  <h2>Resumen ejecutivo</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <p class="kpi-label">Instalaciones evaluadas</p>
+      <p class="kpi-value">3.618</p>
+      <p class="kpi-note">de 3.887 registros del archivo (FO, alta/traslado/blindaje)</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Averías de infancia (netas)</p>
+      <p class="kpi-value">77</p>
+      <p class="kpi-note">dentro de 30 días, tras exclusiones</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Tasa de infancia global</p>
+      <p class="kpi-value">2,13 %</p>
+      <p class="kpi-note">77 / 3.618 instalaciones</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Agencias sobre su meta</p>
+      <p class="kpi-value warn">1 de 3</p>
+      <p class="kpi-note">Viña del Mar</p>
+    </div>
+  </div>
+</section>
 
-    <div class="stat-row">
-      <div class="stat-tile">
-        <div class="label">Meta</div>
-        <div class="value">1,50%</div>
-        <div class="foot">Umbral máximo de infancia</div>
+<section>
+  <h2>Cumplimiento por agencia</h2>
+  <div class="table-wrap">
+    <table id="tabla-agencias">
+      <thead>
+        <tr>
+          <th>Agencia</th><th>Instalaciones</th><th>Infancia (netas)</th><th>% Infancia</th><th>Meta</th><th>Desviación</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Viña del Mar</td>
+          <td>2.029</td>
+          <td>68</td>
+          <td>3,35 %</td>
+          <td>1,50 %</td>
+          <td>+1,85 pp</td>
+          <td><span class="status-pill no">No cumple</span></td>
+        </tr>
+        <tr>
+          <td>Valparaíso</td>
+          <td>1.134</td>
+          <td>8</td>
+          <td>0,71 %</td>
+          <td>1,50 %</td>
+          <td>&minus;0,79 pp</td>
+          <td><span class="status-pill ok">Cumple</span></td>
+        </tr>
+        <tr>
+          <td>San Antonio</td>
+          <td>455</td>
+          <td>1</td>
+          <td>0,22 %</td>
+          <td>1,50 %</td>
+          <td>&minus;1,28 pp</td>
+          <td><span class="status-pill ok">Cumple</span></td>
+        </tr>
+        <tr class="total">
+          <td>Total FO</td>
+          <td>3.618</td>
+          <td>77</td>
+          <td>2,13 %</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+          <td>&mdash;</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Técnicos más ofensores del mes</h2>
+  <div class="tech-picker">
+    <label for="tech-select">Seleccionar técnico</label>
+    <select id="tech-select">
+      <option value="" selected>Selecciona un técnico&hellip;</option>
+          <option value="0">ABRAHAM DAVID SALAZAR CUBILLOS &middot; Viña del Mar</option>
+          <option value="1">RICARDO BENITO CORREA TORRES &middot; Viña del Mar</option>
+          <option value="2">JONATHAN RICARDO HENRIQUEZ VENEGAS &middot; Viña del Mar</option>
+          <option value="3">SEBASTIAN PATRICIO SILVA CANTILLANA &middot; Viña del Mar</option>
+          <option value="4">RONALD ANTONIO GARIZA TORRES &middot; Viña del Mar</option>
+          <option value="5">JAIME ALEJANDRO FIGUEROA PINO &middot; Viña del Mar</option>
+          <option value="6">HECTOR JOSE ORTIZ MARQUEZ &middot; Viña del Mar</option>
+          <option value="7">FRANCO JOSUE DIAZ NUNEZ &middot; Viña del Mar</option>
+          <option value="8">BRYAN ANTONIO HINOJOSA CARDENAS &middot; Viña del Mar</option>
+          <option value="9">CRISTIAN NICOLAS SERRANO VELLAGAS &middot; Viña del Mar</option>
+          <option value="10">FERNANDO ALEXIS HOLM MORALES &middot; Viña del Mar</option>
+          <option value="11">PEDRO ISAIAS CONCHA JORQUERA &middot; Valparaíso</option>
+          <option value="12">WILFRED RENE ROCCO ZUNIGA &middot; Viña del Mar</option>
+          <option value="13">CARLOS HERNAN MUNOZ MATUS &middot; Viña del Mar</option>
+          <option value="14">JAIR JESUS VALENCIA DIAZ &middot; Viña del Mar</option>
+          <option value="15">ALEJANDRO SEBASTIAN CISTERNAS MARIN &middot; Viña del Mar</option>
+          <option value="16">LUIS ALFONSO VALLEJO GARCIA &middot; Viña del Mar</option>
+          <option value="17">ABELARDO HIPOLITO VENEGAS HERNANDEZ &middot; Viña del Mar</option>
+          <option value="18">PATRICIO CANALES GEVE &middot; Viña del Mar</option>
+          <option value="19">MATIAS RUBEN RUBINA BURGOS &middot; Valparaíso</option>
+          <option value="20">FABIAN GONZALO SAAVEDRA VILCHES &middot; Viña del Mar</option>
+          <option value="21">EDISON ANONIO LOPEZ CONTRERAS &middot; Viña del Mar</option>
+          <option value="22">NESTOR FABIAN PASTEN ALARCON &middot; Viña del Mar</option>
+          <option value="23">FRANCISCO ESTEBAN CARMONA CASTRO &middot; Viña del Mar</option>
+          <option value="24">YUSSEF ALI SAT PINO &middot; Viña del Mar</option>
+          <option value="25">BASTIAN IGNACIO RIOS MADRID &middot; Viña del Mar</option>
+          <option value="26">JUAN JOSE MARCANO GONZALEZ &middot; Viña del Mar</option>
+          <option value="27">JOSE MANUEL SEPULVEDA ROJAS &middot; Viña del Mar</option>
+          <option value="28">CHRISTOPHER PATRICK LISBOA BARRERA &middot; Valparaíso</option>
+          <option value="29">FRANCISCO ERNESTO GUERRA GOMEZ &middot; Valparaíso</option>
+          <option value="30">PROPHETE GABRIEL &middot; Valparaíso</option>
+          <option value="31">MATIAS HERNAN VILLALOBOS RAMOS &middot; Valparaíso</option>
+          <option value="32">DANIEL ALEXANDER RAMIREZ TORRES &middot; Valparaíso</option>
+          <option value="33">ALEJANDRO NICOLAS PARA GOMEZ &middot; Viña del Mar</option>
+          <option value="34">ESTEBAN DAVID ORTIZ FIGUEROA &middot; Viña del Mar</option>
+          <option value="35">HECTOR LEONARDO MUNOZ MIRANDA &middot; San Antonio</option>
+          <option value="36">ALEJANDRO ENRIQUE LAGOS GONZALEZ &middot; Viña del Mar</option>
+    </select>
+    <div class="tech-detail">
+      <div class="kpi-card">
+        <p class="kpi-label">Agencia</p>
+        <p class="kpi-value" id="tech-agencia">&mdash;</p>
       </div>
-      <div class="stat-tile status-critical">
-        <div class="label">Tasa real V Región</div>
-        <div class="value">2,05%</div>
-        <div class="foot">74 / 3.618 instalaciones</div>
+      <div class="kpi-card">
+        <p class="kpi-label">Instalaciones</p>
+        <p class="kpi-value" id="tech-total">&mdash;</p>
       </div>
-      <div class="stat-tile status-critical">
-        <div class="label">Desviación vs. meta</div>
-        <div class="value">+0,55 pp</div>
-        <div class="foot"><span class="status-pill critical">&#10005; No cumple</span></div>
+      <div class="kpi-card">
+        <p class="kpi-label">Infancia (netas)</p>
+        <p class="kpi-value" id="tech-reiteradas">&mdash;</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">% Infancia</p>
+        <p class="kpi-value" id="tech-tasa">&mdash;</p>
       </div>
     </div>
+  </div>
+  <p class="kpi-note" style="margin-top:.6rem;">Estos 8 técnicos concentran 36 de las 77 averías de infancia netas (47 %) y los 8 pertenecen a Viña del Mar.</p>
+</section>
+<script>
+var TECNICOS = [{"n":"ABRAHAM DAVID SALAZAR CUBILLOS","a":"Viña del Mar","t":"88","r":"8","p":"9,09 %"},{"n":"RICARDO BENITO CORREA TORRES","a":"Viña del Mar","t":"92","r":"7","p":"7,61 %"},{"n":"JONATHAN RICARDO HENRIQUEZ VENEGAS","a":"Viña del Mar","t":"43","r":"4","p":"9,30 %"},{"n":"SEBASTIAN PATRICIO SILVA CANTILLANA","a":"Viña del Mar","t":"94","r":"4","p":"4,26 %"},{"n":"RONALD ANTONIO GARIZA TORRES","a":"Viña del Mar","t":"99","r":"4","p":"4,04 %"},{"n":"JAIME ALEJANDRO FIGUEROA PINO","a":"Viña del Mar","t":"23","r":"3","p":"13,04 %"},{"n":"HECTOR JOSE ORTIZ MARQUEZ","a":"Viña del Mar","t":"52","r":"3","p":"5,77 %"},{"n":"FRANCO JOSUE DIAZ NUNEZ","a":"Viña del Mar","t":"54","r":"3","p":"5,56 %"},{"n":"BRYAN ANTONIO HINOJOSA CARDENAS","a":"Viña del Mar","t":"83","r":"3","p":"3,61 %"},{"n":"CRISTIAN NICOLAS SERRANO VELLAGAS","a":"Viña del Mar","t":"28","r":"2","p":"7,14 %"},{"n":"FERNANDO ALEXIS HOLM MORALES","a":"Viña del Mar","t":"65","r":"2","p":"3,08 %"},{"n":"PEDRO ISAIAS CONCHA JORQUERA","a":"Valparaíso","t":"66","r":"2","p":"3,03 %"},{"n":"WILFRED RENE ROCCO ZUNIGA","a":"Viña del Mar","t":"68","r":"2","p":"2,94 %"},{"n":"CARLOS HERNAN MUNOZ MATUS","a":"Viña del Mar","t":"69","r":"2","p":"2,90 %"},{"n":"JAIR JESUS VALENCIA DIAZ","a":"Viña del Mar","t":"70","r":"2","p":"2,86 %"},{"n":"ALEJANDRO SEBASTIAN CISTERNAS MARIN","a":"Viña del Mar","t":"74","r":"2","p":"2,70 %"},{"n":"LUIS ALFONSO VALLEJO GARCIA","a":"Viña del Mar","t":"76","r":"2","p":"2,63 %"},{"n":"ABELARDO HIPOLITO VENEGAS HERNANDEZ","a":"Viña del Mar","t":"84","r":"2","p":"2,38 %"},{"n":"PATRICIO CANALES GEVE","a":"Viña del Mar","t":"84","r":"2","p":"2,38 %"},{"n":"MATIAS RUBEN RUBINA BURGOS","a":"Valparaíso","t":"17","r":"1","p":"5,88 %"},{"n":"FABIAN GONZALO SAAVEDRA VILCHES","a":"Viña del Mar","t":"18","r":"1","p":"5,56 %"},{"n":"EDISON ANONIO LOPEZ CONTRERAS","a":"Viña del Mar","t":"20","r":"1","p":"5,00 %"},{"n":"NESTOR FABIAN PASTEN ALARCON","a":"Viña del Mar","t":"31","r":"1","p":"3,23 %"},{"n":"FRANCISCO ESTEBAN CARMONA CASTRO","a":"Viña del Mar","t":"32","r":"1","p":"3,13 %"},{"n":"YUSSEF ALI SAT PINO","a":"Viña del Mar","t":"42","r":"1","p":"2,38 %"},{"n":"BASTIAN IGNACIO RIOS MADRID","a":"Viña del Mar","t":"50","r":"1","p":"2,00 %"},{"n":"JUAN JOSE MARCANO GONZALEZ","a":"Viña del Mar","t":"53","r":"1","p":"1,89 %"},{"n":"JOSE MANUEL SEPULVEDA ROJAS","a":"Viña del Mar","t":"60","r":"1","p":"1,67 %"},{"n":"CHRISTOPHER PATRICK LISBOA BARRERA","a":"Valparaíso","t":"61","r":"1","p":"1,64 %"},{"n":"FRANCISCO ERNESTO GUERRA GOMEZ","a":"Valparaíso","t":"68","r":"1","p":"1,47 %"},{"n":"PROPHETE GABRIEL","a":"Valparaíso","t":"75","r":"1","p":"1,33 %"},{"n":"MATIAS HERNAN VILLALOBOS RAMOS","a":"Valparaíso","t":"77","r":"1","p":"1,30 %"},{"n":"DANIEL ALEXANDER RAMIREZ TORRES","a":"Valparaíso","t":"78","r":"1","p":"1,28 %"},{"n":"ALEJANDRO NICOLAS PARA GOMEZ","a":"Viña del Mar","t":"78","r":"1","p":"1,28 %"},{"n":"ESTEBAN DAVID ORTIZ FIGUEROA","a":"Viña del Mar","t":"84","r":"1","p":"1,19 %"},{"n":"HECTOR LEONARDO MUNOZ MIRANDA","a":"San Antonio","t":"88","r":"1","p":"1,14 %"},{"n":"ALEJANDRO ENRIQUE LAGOS GONZALEZ","a":"Viña del Mar","t":"97","r":"1","p":"1,03 %"}];
+(function(){
+  var sel = document.getElementById('tech-select');
+  var elA = document.getElementById('tech-agencia');
+  var elT = document.getElementById('tech-total');
+  var elR = document.getElementById('tech-reiteradas');
+  var elP = document.getElementById('tech-tasa');
+  function render(i){
+    var d = TECNICOS[i];
+    if(!d){ elA.textContent='—'; elT.textContent='—'; elR.textContent='—'; elP.textContent='—'; return; }
+    elA.textContent = d.a;
+    elT.textContent = d.t;
+    elR.textContent = d.r;
+    elP.textContent = d.p;
+  }
+  if (sel) {
+    sel.addEventListener('change', function(){ render(this.value === '' ? null : this.value); });
+  }
+})();
+</script>
 
-    <div class="card">
-      <h2>Metodología</h2>
-      <ul class="method-list">
-        <li>Fórmula: total infancia (<code>infancia=1</code>) / total instalaciones completadas mes anterior</li>
-        <li>Se excluyen reclamos con clave de cierre 913, F20, F23, 561, A12, B01, B36 e I50</li>
-        <li>Acceso FO (<code>vpi_tecnologia_acceso = FO</code>)</li>
-        <li>Actividades de alta, traslado y blindaje (<code>vpi_tipo_trabajo_producto</code> = A, T y B)</li>
+<section>
+  <h2>Causas del no cumplimiento</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <p class="kpi-label">Causa dominante</p>
+      <p class="kpi-value" style="font-size:19px;">BA-CABLE INT/ ROSETA OPTICA - FO -90057</p>
+      <p class="kpi-note">26 % de las infancias netas</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Reingresos rápidos (&le;2 días)</p>
+      <p class="kpi-value warn">22 %</p>
+      <p class="kpi-note">17 de 77 casos &mdash; instalación posiblemente incompleta</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Empresa con mayor tasa</p>
+      <p class="kpi-value" style="font-size:19px;">CFA</p>
+      <p class="kpi-note">5,37 % &middot; 3,3x la tasa de ELECNOR</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-label">Días promedio a la reincidencia</p>
+      <p class="kpi-value">8,5</p>
+      <p class="kpi-note">días desde la instalación</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:1rem;">
+    <h3>Lectura de causa raíz</h3>
+    <ul>
+        <li>BA-CABLE INT/ ROSETA OPTICA - FO -90057 concentra el 26 % de las averías de infancia netas (20 de 77 casos).</li>
+        <li>22 % de las infancias (17 de 77 casos) vuelven a fallar dentro de los primeros 2 días tras la instalación, lo que sugiere una instalación incompleta o mal verificada más que una falla nueva independiente.</li>
+        <li>CFA presenta una tasa de infancia de 5,37 % (26 de 484 instalaciones), 3,3 veces la tasa de ELECNOR (1,63 %) — evidencia de un problema de proceso o control de calidad de ese contratista, no de técnicos aislados.</li>
+        <li>Los 8 técnicos con más casos se concentran íntegramente en Viña del Mar y explican el 47 % de las averías netas — el problema está territorialmente acotado, no disperso entre técnicos aislados.</li>
+        <li>El promedio de 8,5 días hasta la reincidencia indica que, fuera del 22 % de reingresos rápidos, la mayoría de los casos aparece semanas después de la instalación.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Lectura para gerencia</h2>
+  <div class="notes-grid">
+    <div class="panel">
+      <h3>Hallazgo principal</h3>
+      <ul>
+        <li>Viña del Mar concentra el 88 % de las averías de infancia de la red (68 de 77 casos) y es la única agencia sobre su meta (3,35 % vs. 1,50 % de meta).</li>
+        <li>San Antonio, Valparaíso operan con holgura frente a su meta, con San Antonio en el mejor nivel relativo (0,22 %).</li>
+        <li>La tasa global (2,13 %) resulta del balance entre las 3 agencias evaluadas sobre 3.618 instalaciones A/T/B FO del período.</li>
       </ul>
     </div>
-
-    <div class="card">
-      <h2>Porcentaje de averías de infancia por agencia</h2>
-      <p class="card-sub">Casos válidos sobre instalaciones A/T/B FO de cada agencia · línea vertical = meta 1,50%</p>
-      <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Agencia</th>
-            <th class="num">Instalaciones</th>
-            <th class="num">Infancia</th>
-            <th style="min-width:200px">Tasa vs. meta</th>
-            <th class="num">Tasa</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Viña del Mar</td>
-            <td class="num">2.029</td>
-            <td class="num">65</td>
-            <td>
-              <div class="bar-cell">
-                <div class="bar-track">
-                  <div class="bar-fill critical" style="width:100%"></div>
-                  <div class="meta-marker" style="left:46.9%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="num">3,20%</td>
-            <td><span class="status-pill critical">&#10005; No cumple</span></td>
-          </tr>          <tr>
-            <td>San Antonio</td>
-            <td class="num">455</td>
-            <td class="num">1</td>
-            <td>
-              <div class="bar-cell">
-                <div class="bar-track">
-                  <div class="bar-fill" style="width:6.9%"></div>
-                  <div class="meta-marker" style="left:46.9%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="num">0,22%</td>
-            <td><span class="status-pill good">&#10003; Cumple</span></td>
-          </tr>          <tr>
-            <td>Valparaíso</td>
-            <td class="num">1.134</td>
-            <td class="num">8</td>
-            <td>
-              <div class="bar-cell">
-                <div class="bar-track">
-                  <div class="bar-fill" style="width:22.2%"></div>
-                  <div class="meta-marker" style="left:46.9%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="num">0,71%</td>
-            <td><span class="status-pill good">&#10003; Cumple</span></td>
-          </tr>          <tr class="total-row">
-            <td>Total V Región</td>
-            <td class="num">3.618</td>
-            <td class="num">74</td>
-            <td>
-              <div class="bar-cell">
-                <div class="bar-track">
-                  <div class="bar-fill critical" style="width:64.1%"></div>
-                  <div class="meta-marker" style="left:46.9%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="num">2,05%</td>
-            <td><span class="status-pill critical">&#10005; No cumple</span></td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
-      <p class="legend">Reporte generado automáticamente desde el archivo CSV más reciente de la carpeta BBDD.</p>
-    </div>
-
-    <div class="card">
-      <h2>Tasa de infancia por empresa reparadora</h2>
-      <p class="card-sub">Normalizada por volumen de instalaciones — no confundir con el conteo absoluto de casos</p>
-      <div class="table-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Empresa</th>
-            <th class="num">Instalaciones</th>
-            <th class="num">Infancia</th>
-            <th style="min-width:200px">Tasa vs. meta</th>
-            <th class="num">Tasa</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>CFA</td>
-            <td class="num">484</td>
-            <td class="num">26</td>
-            <td>
-              <div class="bar-cell">
-                <div class="bar-track">
-                  <div class="bar-fill critical" style="width:100%"></div>
-                  <div class="meta-marker" style="left:27.9%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="num">5,37%</td>
-            <td><span class="status-pill critical">&#10005; No cumple</span></td>
-          </tr>          <tr>
-            <td>ELECNOR</td>
-            <td class="num">3.130</td>
-            <td class="num">48</td>
-            <td>
-              <div class="bar-cell">
-                <div class="bar-track">
-                  <div class="bar-fill critical" style="width:28.5%"></div>
-                  <div class="meta-marker" style="left:27.9%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="num">1,53%</td>
-            <td><span class="status-pill critical">&#10005; No cumple</span></td>
-          </tr>          <tr>
-            <td>TELEFONICA</td>
-            <td class="num">4</td>
-            <td class="num">0</td>
-            <td>
-              <div class="bar-cell">
-                <div class="bar-track">
-                  <div class="bar-fill" style="width:0%"></div>
-                  <div class="meta-marker" style="left:27.9%"></div>
-                </div>
-              </div>
-            </td>
-            <td class="num">0,00%</td>
-            <td><span class="status-pill good">&#10003; Cumple</span></td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
-      <p class="legend">La empresa con mayor volumen no es necesariamente la de peor desempeño relativo — esta vista corrige ese sesgo.</p>
-    </div>
-
-    <div class="card">
-      <h2>Técnicos con mayor reincidencia por agencia</h2>
-      <p class="card-sub">Seleccione cualquier técnico en el combo box de su agencia para ver el número de averías de infancia asociadas</p>
-      <div class="tech-grid">
-
-        <div class="tech-card" data-agencia="vina">
-          <h3>Viña del Mar</h3>
-          <p class="tech-card-sub">65 casos registrados · 26 técnicos</p>
-          <select class="tech-select" id="vina-select" onchange="showTech('vina', this.value)">
-            <option value="" selected>— Todos los técnicos (quitar filtro) —</option>
-          </select>
-          <div class="tech-result" id="vina-result">Seleccione un técnico para ver sus averías.</div>
-          <div class="tech-row" id="vina-row-0"><div class="tech-rank">1</div><div class="tech-name">ABRAHAM DAVID SALAZAR CUBILLOS</div><div class="tech-count">8</div></div>
-          <div class="tech-row" id="vina-row-1"><div class="tech-rank">2</div><div class="tech-name">RICARDO BENITO CORREA TORRES</div><div class="tech-count">7</div></div>
-          <div class="tech-row" id="vina-row-2"><div class="tech-rank">3</div><div class="tech-name">JONATHAN RICARDO HENRIQUEZ VENEGAS</div><div class="tech-count">4</div></div>
-          <div class="tech-row" id="vina-row-3"><div class="tech-rank">4</div><div class="tech-name">RONALD ANTONIO GARIZA TORRES</div><div class="tech-count">4</div></div>
-          <div class="tech-row" id="vina-row-4"><div class="tech-rank">5</div><div class="tech-name">SEBASTIAN PATRICIO SILVA CANTILLANA</div><div class="tech-count">4</div></div>
-          <p class="tech-more">+21 técnicos más — selecciónelos en el combo box.</p>
-        </div>
-        <div class="tech-card" data-agencia="sanantonio">
-          <h3>San Antonio</h3>
-          <p class="tech-card-sub">1 caso registrado · 1 técnico</p>
-          <select class="tech-select" id="sanantonio-select" onchange="showTech('sanantonio', this.value)">
-            <option value="" selected>— Todos los técnicos (quitar filtro) —</option>
-          </select>
-          <div class="tech-result" id="sanantonio-result">Seleccione un técnico para ver sus averías.</div>
-          <div class="tech-row" id="sanantonio-row-0"><div class="tech-rank">1</div><div class="tech-name">HECTOR LEONARDO MUNOZ MIRANDA</div><div class="tech-count">1</div></div>
-        </div>
-        <div class="tech-card" data-agencia="valparaiso">
-          <h3>Valparaíso</h3>
-          <p class="tech-card-sub">8 casos registrados · 7 técnicos</p>
-          <select class="tech-select" id="valparaiso-select" onchange="showTech('valparaiso', this.value)">
-            <option value="" selected>— Todos los técnicos (quitar filtro) —</option>
-          </select>
-          <div class="tech-result" id="valparaiso-result">Seleccione un técnico para ver sus averías.</div>
-          <div class="tech-row" id="valparaiso-row-0"><div class="tech-rank">1</div><div class="tech-name">PEDRO ISAIAS CONCHA JORQUERA</div><div class="tech-count">2</div></div>
-          <div class="tech-row" id="valparaiso-row-1"><div class="tech-rank">2</div><div class="tech-name">CHRISTOPHER PATRICK LISBOA BARRERA</div><div class="tech-count">1</div></div>
-          <div class="tech-row" id="valparaiso-row-2"><div class="tech-rank">3</div><div class="tech-name">DANIEL ALEXANDER RAMIREZ TORRES</div><div class="tech-count">1</div></div>
-          <div class="tech-row" id="valparaiso-row-3"><div class="tech-rank">4</div><div class="tech-name">FRANCISCO ERNESTO GUERRA GOMEZ</div><div class="tech-count">1</div></div>
-          <div class="tech-row" id="valparaiso-row-4"><div class="tech-rank">5</div><div class="tech-name">MATIAS HERNAN VILLALOBOS RAMOS</div><div class="tech-count">1</div></div>
-          <p class="tech-more">+2 técnicos más — selecciónelos en el combo box.</p>
-        </div>
-
+    <div class="panel">
+      <h3>Metodología</h3>
+      <ul>
+        <li>% Infancia = averías de infancia en 30 días / total instalaciones completadas mes anterior.</li>
+        <li>Alcance: solo accesos de fibra óptica (FO), actividades de alta, traslado y blindaje.</li>
+        <li>Se excluyen del numerador los casos con clave de cierre en:</li>
+      </ul>
+      <div class="codes">
+        <span class="code-chip">913</span>
+        <span class="code-chip">F20</span>
+        <span class="code-chip">F23</span>
+        <span class="code-chip">561</span>
+        <span class="code-chip">A12</span>
+        <span class="code-chip">B01</span>
+        <span class="code-chip">B36</span>
+        <span class="code-chip">I50</span>
       </div>
     </div>
-
-    <div class="conclusion">
-      <h2>Conclusión y foco de gestión</h2>
-      <p>La V Región cierra el período con una tasa de infancia de 2,05%, por sobre la meta de 1,50% (+0,55 pp).</p>
-      <p>Viña del Mar concentra 65 de los 74 casos (88%) con una tasa de 3,20%. Por empresa reparadora, CFA presenta la tasa más alta (5,37% sobre 484 instalaciones).</p>
-      <p>Este informe se actualiza automáticamente desde el archivo más reciente descargado en la carpeta BBDD. Última actualización: 11-09-2026 12:47.</p>
-    </div>
-
-    <p class="footer-note">Elecnor Chile · Uso interno · Generado automáticamente desde Averias_infancia_09_2026.csv · 11-09-2026 12:47</p>
-    <p class="footer-note">Diseñado por Xas</p>
   </div>
+</section>
+
+<footer>
+  <span>Fuente: Averias_infancia_09_2026.csv (BBDD) &middot; 3.887 registros &middot; instalaciones 01-08-2026 a 31-08-2026 &middot; Última actualización: 14-09-2026 12:17</span>
+  <span>Elecnor Chile &middot; Operaciones &middot; Diseñado por Xas</span>
+</footer>
+
 </div>
 <script>
-  var techData = {
-    vina: [
-      { name: 'ABRAHAM DAVID SALAZAR CUBILLOS', count: 8 },
-      { name: 'RICARDO BENITO CORREA TORRES', count: 7 },
-      { name: 'JONATHAN RICARDO HENRIQUEZ VENEGAS', count: 4 },
-      { name: 'RONALD ANTONIO GARIZA TORRES', count: 4 },
-      { name: 'SEBASTIAN PATRICIO SILVA CANTILLANA', count: 4 },
-      { name: 'BRYAN ANTONIO HINOJOSA CARDENAS', count: 3 },
-      { name: 'FRANCO JOSUE DIAZ NUNEZ', count: 3 },
-      { name: 'HECTOR JOSE ORTIZ MARQUEZ', count: 3 },
-      { name: 'JAIME ALEJANDRO FIGUEROA PINO', count: 3 },
-      { name: 'ABELARDO HIPOLITO VENEGAS HERNANDEZ', count: 2 },
-      { name: 'ALEJANDRO SEBASTIAN CISTERNAS MARIN', count: 2 },
-      { name: 'CARLOS HERNAN MUNOZ MATUS', count: 2 },
-      { name: 'CRISTIAN NICOLAS SERRANO VELLAGAS', count: 2 },
-      { name: 'FERNANDO ALEXIS HOLM MORALES', count: 2 },
-      { name: 'JAIR JESUS VALENCIA DIAZ', count: 2 },
-      { name: 'LUIS ALFONSO VALLEJO GARCIA', count: 2 },
-      { name: 'PATRICIO CANALES GEVE', count: 2 },
-      { name: 'WILFRED RENE ROCCO ZUNIGA', count: 2 },
-      { name: 'ALEJANDRO ENRIQUE LAGOS GONZALEZ', count: 1 },
-      { name: 'ALEJANDRO NICOLAS PARA GOMEZ', count: 1 },
-      { name: 'EDISON ANONIO LOPEZ CONTRERAS', count: 1 },
-      { name: 'ESTEBAN DAVID ORTIZ FIGUEROA', count: 1 },
-      { name: 'FRANCISCO ESTEBAN CARMONA CASTRO', count: 1 },
-      { name: 'JOSE MANUEL SEPULVEDA ROJAS', count: 1 },
-      { name: 'JUAN JOSE MARCANO GONZALEZ', count: 1 },
-      { name: 'NESTOR FABIAN PASTEN ALARCON', count: 1 }
-    ],
-    sanantonio: [
-      { name: 'HECTOR LEONARDO MUNOZ MIRANDA', count: 1 }
-    ],
-    valparaiso: [
-      { name: 'PEDRO ISAIAS CONCHA JORQUERA', count: 2 },
-      { name: 'CHRISTOPHER PATRICK LISBOA BARRERA', count: 1 },
-      { name: 'DANIEL ALEXANDER RAMIREZ TORRES', count: 1 },
-      { name: 'FRANCISCO ERNESTO GUERRA GOMEZ', count: 1 },
-      { name: 'MATIAS HERNAN VILLALOBOS RAMOS', count: 1 },
-      { name: 'MATIAS RUBEN RUBINA BURGOS', count: 1 },
-      { name: 'PROPHETE GABRIEL', count: 1 }
-    ],
-  };
+(function(){
+  var root = document.documentElement;
+  var btnTheme = document.getElementById('btn-theme');
 
-  function populateSelects() {
-    Object.keys(techData).forEach(function (agencia) {
-      var select = document.getElementById(agencia + '-select');
-      if (!select) return;
-      techData[agencia].forEach(function (tech, idx) {
-        var opt = document.createElement('option');
-        opt.value = idx;
-        opt.textContent = tech.name;
-        select.appendChild(opt);
-      });
+  function systemPref(){
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  function currentTheme(){
+    return root.getAttribute('data-theme') || systemPref();
+  }
+  function updateThemeButton(){
+    var dark = currentTheme() === 'dark';
+    if (btnTheme) {
+      btnTheme.classList.toggle('is-dark-active', dark);
+      btnTheme.setAttribute('aria-label', dark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+    }
+  }
+  try {
+    var saved = localStorage.getItem('averias-infancia-theme');
+    if (saved === 'dark' || saved === 'light') { root.setAttribute('data-theme', saved); }
+  } catch (e) {}
+  updateThemeButton();
+  if (btnTheme) {
+    btnTheme.addEventListener('click', function(){
+      var next = currentTheme() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('averias-infancia-theme', next); } catch (e) {}
+      updateThemeButton();
     });
   }
 
-  function showTech(agencia, idx) {
-    var card = document.querySelector('.tech-card[data-agencia="' + agencia + '"]');
-    var result = document.getElementById(agencia + '-result');
-
-    if (idx === '') {
-      result.textContent = 'Seleccione un técnico para ver sus averías.';
-      card.querySelectorAll('.tech-row').forEach(function (r) { r.classList.remove('highlighted'); });
-      return;
-    }
-
-    var tech = techData[agencia][idx];
-    var label = tech.count === 1 ? 'avería' : 'averías';
-    result.innerHTML = '<span class="r-name">' + tech.name + '</span> — <span class="r-count">' + tech.count + ' ' + label + '</span> de infancia registradas';
-
-    card.querySelectorAll('.tech-row').forEach(function (r) { r.classList.remove('highlighted'); });
-    var row = document.getElementById(agencia + '-row-' + idx);
-    if (row) {
-      row.classList.add('highlighted');
-      row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+  var btnPdf = document.getElementById('btn-export-pdf');
+  if (btnPdf) {
+    btnPdf.addEventListener('click', function(){ window.print(); });
   }
 
-  populateSelects();
+  var btnExcel = document.getElementById('btn-export-excel');
+  if (btnExcel && typeof XLSX !== 'undefined') {
+    btnExcel.addEventListener('click', function(){
+      var wb = XLSX.utils.book_new();
+      var tabla = document.getElementById('tabla-agencias');
+      if (tabla) {
+        var ws1 = XLSX.utils.table_to_sheet(tabla);
+        XLSX.utils.book_append_sheet(wb, ws1, 'Cumplimiento agencias');
+      }
+      if (typeof TECNICOS !== 'undefined' && TECNICOS.length) {
+        var filas = TECNICOS.map(function(d){
+          return {
+            'Tecnico': d.n,
+            'Agencia': d.a,
+            'Instalaciones': d.t,
+            'Infancia netas': d.r,
+            '% Infancia': d.p
+          };
+        });
+        var ws2 = XLSX.utils.json_to_sheet(filas);
+        XLSX.utils.book_append_sheet(wb, ws2, 'Tecnicos ofensores');
+      }
+      XLSX.writeFile(wb, 'Informe_Averias_Infancia_14-09-2026.xlsx');
+    });
+  }
+})();
 </script>
 </body>
 </html>
